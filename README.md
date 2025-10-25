@@ -1,8 +1,6 @@
 # SocialLifeApp-3340  
 ### For CSCI-3340  
 
----
-
 ## 🎂 Birthday Reminder App – *"Cake Day!"*
 
 App where people can add their own birthdays on their profile and connect with others.  
@@ -12,8 +10,6 @@ Those who sign up will be connected to a shared **database**, and anyone who sha
 It will show a list of all the people you share a birthday with, but you can also **add people** by searching their usernames.  
 You can then see their birthdays, set **reminders**, and when it’s someone’s birthday from your friends list, you can send a **prewritten** or **custom message** to celebrate.
 
----
-
 ### 📄 Project Details
 **Target Release:** Prototype  
 **Document Status:** Work in Progress  
@@ -22,14 +18,10 @@ You can then see their birthdays, set **reminders**, and when it’s someone’s
 **Developers:** Trey Pedroza, Gael Marquez, Jesus Lira  
 **Q&A Contact:** Trey Pedroza  
 
----
-
 ## 🧰 Tools
 - Django  
 - Bootstrap  
 - Python  
-
----
 
 ## 🚀 Features (in order of priority)
 1. **Database/Login System:** Create and log user information.  
@@ -41,21 +33,15 @@ You can then see their birthdays, set **reminders**, and when it’s someone’s
 7. **Bulletin Board:** Show upcoming birthdays and related announcements.  
 8. **Message Forum:** Let users who share the same birthday day or year connect and chat.  
 
----
-
 ## ❓ Questions
 Below is a list of questions to be addressed as a result of reviewing this design document:  
 
 > **Q:** “Do I have to put in my real name?”  
 > **A:** Nobody is obligated to put their real name. However, for adding others such as your friends, you *may* use your real name. It will only be visible to those you’ve added and not to the public.  
 
----
-
 ## 🚫 Not Doing
 Below are the user stories, ideas, or features that were considered but are not included in this version or phase of the project:  
 - We currently have not excluded any features yet. 
-
----
 
 ## 🧍 User Stories
 - **Searching System:** As a person who wants more friends with things in common, I want an app that allows me to search by shared things so that I can make more friends.  
@@ -63,4 +49,3 @@ Below are the user stories, ideas, or features that were considered but are not 
 - **Calendar:** As someone who likes to stay on top of important dates, I want a calendar that shows my friends’ birthdays so that I can plan ahead and never miss their special days.  
 - **User Profile:** As a user who values self-expression, I want to customize my profile with pictures and personal details so that others can get to know me better.  
 - **Message Forum:** As someone who enjoys meeting people with shared experiences, I want a message forum where users with the same birthday can connect so that we can celebrate and chat together.  
-
