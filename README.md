@@ -10,7 +10,7 @@ Those who sign up will be connected to a shared **database**, and anyone who sha
 It will show a list of all the people you share a birthday with, but you can also **add people** by searching their usernames.  
 You can then see their birthdays, set **reminders**, and when it’s someone’s birthday from your friends list, you can send a **prewritten** or **custom message** to celebrate.
 
-### 📄 Project Details
+## 📄 Project Details
 **Target Release:** Prototype  
 **Document Status:** Work in Progress  
 **Document Owner:** Trey Pedroza  
