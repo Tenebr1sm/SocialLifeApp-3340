@@ -34,3 +34,9 @@ Below is a list of questions to be addressed as a result of reviewing this desig
 Below are the user stories, ideas, features, etc, that were considered but are not going to be done for this version or phase of the project.
  - We currently have nothing for this section yet
 
+# User Stories
+ - Searching System: As a person who wants more friends with things in common, I want an app that can allow me to search by shared things so that I can make more friends.
+ - Friend System: As an organized and well planned person I want to be able to have different categories of lists for my friend's birthdays so that I am able to prepare ahead of time
+ - Calendar: As someone who likes to stay on top of important dates, I want a calendar that shows my friends’ birthdays so that I can plan ahead and never miss their special days.
+ - User Profile: As a user who values self-expression, I want to customize my profile with pictures and personal details so that others can get to know me better.
+ - Message Forum: As someone who enjoys meeting people with shared experiences, I want a message forum where users with the same birthday can connect so that we can celebrate and chat together.
