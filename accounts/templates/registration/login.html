@@ -3,13 +3,24 @@
 {% block content %}
 <h2>Login</h2>
 
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Login</button>
+{% if messages %}
+  {% for message in messages %}
+    {{ message }}
+  {% endfor %}
+{% endif %}
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="text" name="username" placeholder="Username">
+    <br><br>
+    <input type="password" name="password" placeholder="Password">
+    <br><br>
+    <button type="submit">Login</button>
 </form>
 
-{% if form.errors %}
-  <p style="color:red;">Invalid username or password.</p>
-{% endif %}
+<p>
+  Don't have an account?
+  <a href="{% url 'register' %}">Create account</a>
+</p>
+
 {% endblock %}

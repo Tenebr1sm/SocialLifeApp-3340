@@ -1,6 +1,16 @@
+<!--THIS IS THE PAGE THE USER GOES TO AFTER LOGGING IN-->
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
 {% block content %}
-<h2>Welcome, {{ user.username }}!</h2>
+
+<h2>Welcome, {{ user.username }}!</h2> 
 <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+
+<br><br>
+
+{% if user.is_staff %}
+    <h4>You are an admin. Click here to go to the admin dashboard</h4>
+    <a href="{% url 'admin:index' %}">Admin</a>
+{% endif %}
+
 {% endblock %}
