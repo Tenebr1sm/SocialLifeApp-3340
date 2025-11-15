@@ -8,10 +8,14 @@ __pycache__/
 # Django
 *.log
 db.sqlite3
+CakeDay/settings.py
 /media/
 staticfiles/
 
 # Virtual env
+.env
+vSrt/
+vSrt3/
 venv/
 ENV/
 env/
