@@ -49,3 +49,8 @@ Below are the user stories, ideas, or features that were considered but are not 
 - **Calendar:** As someone who likes to stay on top of important dates, I want a calendar that shows my friends’ birthdays so that I can plan ahead and never miss their special days.  
 - **User Profile:** As a user who values self-expression, I want to customize my profile with pictures and personal details so that others can get to know me better.  
 - **Message Forum:** As someone who enjoys meeting people with shared experiences, I want a message forum where users with the same birthday can connect so that we can celebrate and chat together.  
+
+## 📒 Changelog
+- **11/12/25** Initialized django project
+- **11/14/25** Added the login and user creation system using the database.
+
