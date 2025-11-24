@@ -53,4 +53,4 @@ Below are the user stories, ideas, or features that were considered but are not 
 ## 📒 Changelog
 - **11/12/25** - Initialized django project
 - **11/14/25** - Added the login and user creation system using the database.
-
+- **11/24/25** - Added birthday signup
