@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages #required for showing message
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages 
+from .forms import CustomUserCreationForm, BirthdayForm
+from .models import Profile
 
 def index(request):
     #redirect to login if not logged in, otherwise show home
@@ -22,6 +23,12 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
+
+            profile, created = Profile.objects.get_or_create(user=user)
+
+            if not profile.birthday:
+                return redirect('birthday')
+
             return redirect('home')
         else:
             return render(
@@ -32,6 +39,24 @@ def login_view(request):
 
     return render(request, 'registration/login.html')
 
+@login_required
+def birthday_view(request):
+    """Step 2 of registration: collect birthday."""
+     # Get the user's profile
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        form = BirthdayForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            logout(request)
+            messages.success(request, "Account created successfully. Please log in.")
+            return redirect('login')
+    else:
+        form = BirthdayForm(instance=profile)
+
+    return render(request, 'registration/birthday.html', {'form': form})
+
 def register_view(request):
     #Handles user registration
     # If the user is already logged in, redirect them to the home page
@@ -39,22 +64,22 @@ def register_view(request):
         return redirect('home')
 
     if request.method == "POST":
-        # Process the submitted form data
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()  # Save the new user to the database
-            login(request, user) # Log the user in immediately
-            messages.success(request, "Registration successful. You can now log in.")
-            return redirect('login') # Redirect to the home page
+            user = form.save()
+            Profile.objects.create(user=user) 
+            
+            # --- CHANGED LOGIC ---
+            # 1. Log the user in immediately so they can access the birthday page
+            login(request, user)
+            
+            # 2. Redirect to the Birthday page (Step 2)
+            return redirect('birthday')
         else:
-            # Form was invalid, pass it back to the template
-            # The form object will now contain error messages
             pass 
     else:
-        # If it's a GET request, create a blank form
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
 
-    # Render the registration template
     return render(request, 'registration/register.html', {'form': form})
 
 

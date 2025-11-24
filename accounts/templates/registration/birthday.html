@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Enter Birthday{% endblock %}
+{% block content %}
+
+<h2>Enter Your Birthday</h2>
+<form method="POST">
+    {% csrf_token %}
+    
+    <!-- Loop through the form fields (in this case, just 'birthday') -->
+        {% for field in form %}
+            <div style="margin-bottom: 15px;">
+                <!-- Label -->
+                <label for="{{ field.id_for_label }}" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                    {{ field.label }}
+                </label>
+                
+                <!-- The Input Field -->
+                {{ field }}
+                
+                <!-- Errors -->
+                {% if field.errors %}
+                    <div style="color: red; font-size: 0.9em; margin-top: 5px;">
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        
+        <button type="submit" class="btn" style="width: 100%; padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            Finish Setup
+        </button>
+    </form>
+</div>
+{% endblock %}
