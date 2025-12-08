@@ -3,11 +3,12 @@
 {% block content %}
 
 <style>
-    /* Ensure full width/height and remove default browser margins if base.html doesn't */
+    /* Ensure full width/height */
     body, html {
         margin: 0;
         padding: 0;
         height: 100%;
+        overflow-x: hidden; /* Prevents horizontal scrollbar */
     }
 
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Poppins:wght@300;400;500;600&display=swap');
@@ -15,17 +16,20 @@
     .split-screen {
         display: flex;
         width: 100%;
-        min-height: 100vh; /* Ensures it fills the screen vertically */
+        
+        /* 🚨 THE FIX IS HERE 🚨 */
+        /* We subtract 56px (approx navbar height) so it fits perfectly without scrolling */
+        min-height: calc(100vh - 56px); 
+        
         font-family: 'Poppins', sans-serif;
     }
 
     /* --- THE LEFT SIDE IMAGE --- */
     .left-pane {
         flex: 1; /* Takes up 50% space */
-        /* I've added a new, high-quality aesthetic cake image here */
         background-image: url('https://images.unsplash.com/photo-1621303837174-89787a7d4729?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80');
-        background-size: cover;   /* Ensures image covers the whole area without stretching */
-        background-position: center; /* Centers the main focus of the image */
+        background-size: cover;   
+        background-position: center; 
     }
 
     /* --- THE RIGHT SIDE FORM --- */
@@ -34,7 +38,6 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        /* Soft warm gradient background */
         background: linear-gradient(135deg, #FFF6E5 0%, #FFEFF2 100%);
     }
 
@@ -42,7 +45,7 @@
         width: 100%;
         max-width: 380px;
         padding: 3rem;
-        background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
+        background-color: rgba(255, 255, 255, 0.95);
         border-radius: 20px;
         box-shadow: 0 15px 35px rgba(255, 105, 135, 0.15);
         text-align: center;
@@ -54,7 +57,6 @@
         font-style: italic;
         font-size: 2.8rem;
         margin: 0 0 0.5rem 0;
-        /* Gradient text effect */
         background: -webkit-linear-gradient(45deg, #FF6584, #FF8E53);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -71,7 +73,7 @@
         padding: 14px;
         margin-bottom: 15px;
         border: 2px solid #f0f0f0;
-        border-radius: 12px; /* Slightly rounder inputs */
+        border-radius: 12px;
         box-sizing: border-box;
         font-family: 'Poppins', sans-serif;
         background-color: #fafafa;
@@ -81,7 +83,7 @@
     .login-card input:focus {
         border-color: #FF6584;
         background-color: white;
-        box-shadow: 0 0 0 4px rgba(255, 101, 132, 0.1); /* Subtle pink glow on focus */
+        box-shadow: 0 0 0 4px rgba(255, 101, 132, 0.1);
         outline: none;
     }
 
@@ -125,8 +127,8 @@
 
     /* Mobile Responsiveness */
     @media (max-width: 850px) {
-        .left-pane { display: none; } /* Hide image on smaller screens */
-        .right-pane { background: white; } /* Make background solid white on mobile */
+        .left-pane { display: none; }
+        .right-pane { background: white; }
         .login-card { 
             box-shadow: none; 
             background-color: white;
@@ -171,5 +173,3 @@
 </div>
 
 {% endblock %}
-
-
