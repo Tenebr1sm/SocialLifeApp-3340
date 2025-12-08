@@ -1,11 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CakeDay</title>
+    <!-- Load Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: pink; /* Your chosen color */
+            min-height: 100vh;
+        }
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,.1); /* Adds a subtle shadow under nav */
+        }
+    </style>
 </head>
 <body>
 
-{% block content %}{% endblock %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <!-- 
+         🚨 CHANGED TO 'container-fluid' 🚨
+         This pushes the logo to the far left and the buttons to the far right.
+         I also added 'px-4' (padding-x-4) so they aren't touching the literal edge of the screen.
+      -->
+      <div class="container-fluid px-4">
+        <a class="navbar-brand fw-bold" href="{% url 'home' %}">🍰 CakeDay</a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            
+            {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <!-- 
+                       CHANGED TO SPAN: 
+                       Using a <span> instead of an <a> tag makes it unclickable text.
+                       The 'nav-link' class keeps the spacing consistent.
+                    -->
+                    <span class="nav-link">
+                        Hello, {{ user.username }}!
+                    </span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link btn btn-outline-danger btn-sm ms-2" href="{% url 'logout' %}">Logout</a> 
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-primary text-white ms-2" href="{% url 'register' %}">Register</a>
+                </li>
+            {% endif %}
+            
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid p-0">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
