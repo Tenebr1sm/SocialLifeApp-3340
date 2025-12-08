@@ -19,7 +19,7 @@ vSrt3/
 venv/
 ENV/
 env/
-
+myvirt/
 # IDE
 .vscode/
 .idea/
