@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+    <h2>Edit Your Profile</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        <!-- Loop through Nickname, Bio, and Birthday fields -->
+        {% for field in form %}
+                <label for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                </label>
+                
+                <!-- Render the input field -->
+                {{ field }}
+                
+                <!-- Show Validation Errors (like "Bio is too long") -->
+                {% if field.errors %}
+                        {{ field.errors }}
+                {% endif %}
+                
+                <!-- Show Help Text (like "What should we call you?") -->
+                {% if field.help_text %}
+                    <small>{{ field.help_text }}</small>
+                {% endif %}
+        {% endfor %}
+
+            <!-- Save Button -->
+            <button type="submit" class="btn">
+                Save Changes
+            </button>
+            
+            <!-- Cancel Button (Goes back to your profile page) -->
+            <a href="{% url 'profile' request.user.username %}" class="btn">
+                Cancel
+            </a>
+    </form>
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}{{ profile_user.username }}'s Profile{% endblock %}
+
+{% block content %}
+
+    <!-- Name Header -->
+    <h1>
+        {% if profile_user.profile.nickname %}
+            {{ profile_user.profile.nickname }}
+        {% else %}
+            {{ profile_user.username }}
+        {% endif %}
+    </h1>
+    
+    <p>@{{ profile_user.username }}</p>
+
+    <hr>
+
+    <!-- Birthday -->
+    {% if profile_user.profile.birthday %}
+        <p>
+            <strong>Birthday:</strong> {{ profile_user.profile.birthday|date:"F jS" }}
+        </p>
+    {% endif %}
+
+    <!-- Bio -->
+    {% if profile_user.profile.bio %}
+        <h3>About Me:</h3>
+        <p>{{ profile_user.profile.bio|linebreaks }}</p>
+    {% else %}
+        <p>No bio added yet.</p>
+    {% endif %}
+
+    <!-- Edit Button (Only for owner) -->
+    {% if request.user == profile_user %}
+        <hr>
+        <p>
+            <a href="{% url 'edit_profile' %}">Edit Profile</a>
+        </p>
+    {% endif %}
+
+    <a href="{% url 'home' %}">Go back home</a>
+
+{% endblock %}

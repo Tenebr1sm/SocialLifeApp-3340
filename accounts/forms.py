@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from .models import Profile  # <--- Import the new Profile model
+from .models import Profile
 
 class CustomUserCreationForm(UserCreationForm):
     """
@@ -30,8 +30,7 @@ class CustomUserCreationForm(UserCreationForm):
             
         return username
 
-# --- NEW FORM FOR BIRTHDAY ---
-class BirthdayForm(forms.ModelForm):
+class BirthdayForm(forms.ModelForm): 
     birthday = forms.DateField(
         required=True,
         help_text="Required. Enter your birthday!",
@@ -41,3 +40,14 @@ class BirthdayForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['birthday']
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        #allows user to edit their birthday and bio
+        fields = ['birthday','bio', 'nickname']
+        widgets = {
+            'birthday': forms.DateInput(attrs={'type': 'date'}),
+            'nickname': forms.TextInput(attrs={'placeholder': 'Enter a nickname (optional)'}),
+            'bio': forms.Textarea(attrs={'rows': 4, 'cols': 40, 'placeholder': 'Tell us about yourself!'}),
+        }

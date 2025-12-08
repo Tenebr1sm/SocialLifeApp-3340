@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages 
-from .forms import CustomUserCreationForm, BirthdayForm
+from .forms import CustomUserCreationForm, BirthdayForm, ProfileUpdateForm
 from .models import Profile
 
 def index(request):
@@ -82,6 +84,29 @@ def register_view(request):
 
     return render(request, 'registration/register.html', {'form': form})
 
+def profile_view(request, username):
+    user_obj = get_object_or_404(User, username=username)
+    return render(request, 'profile/profile.html', {'profile_user': user_obj})
+
+@login_required
+def edit_profile_view(request):
+    """
+    Allows the user to edit their profile (Nickname, Bio, Birthday).
+    """
+    # Get or create the profile to ensure we don't crash if it's missing
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        form = ProfileUpdateForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect('home')
+    else:
+        # Pre-fill the form with existing data
+        form = ProfileUpdateForm(instance=profile)
+
+    return render(request, 'profile/edit_profile.html', {'form': form})
 
 @login_required
 def home(request):
