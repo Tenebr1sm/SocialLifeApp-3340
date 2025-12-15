@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}My Birthday Twins{% endblock %}
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <h1 style="text-align: center;">🎉 Your Birthday Twins 🎉</h1>
+    <p style="text-align: center;">These people celebrate on <strong>{{ user.profile.birthday|date:"F jS" }}</strong> just like you!</p>
+    <br>
+
+    <div class="row">
+    {% for twin in twins %}
+        <div class="col-md-6 mb-4">
+            <div class="card p-3 shadow-sm">
+                <h3>
+                    {% if twin.nickname %}
+                        {{ twin.nickname }}
+                    {% else %}
+                        {{ twin.user.username }}
+                    {% endif %}
+                </h3>
+                <p>@{{ twin.user.username }}</p>
+                
+                {% if twin.bio %}
+                    <p><em>"{{ twin.bio|truncatechars:50 }}"</em></p>
+                {% else %}
+                    <p>No bio yet.</p>
+                {% endif %}
+
+                <a href="{% url 'profile' twin.user.username %}" class="btn btn-primary btn-sm">View Profile</a>
+            </div>
+        </div>
+    {% empty %}
+        <div class="alert alert-info text-center">
+            <h4>🎂 No twins found... yet!</h4>
+            <p>You are one of a kind! Check back later.</p>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+{% endblock %}

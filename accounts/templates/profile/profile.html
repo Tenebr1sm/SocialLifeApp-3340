@@ -1,45 +1,64 @@
 {% extends "base.html" %}
-
 {% block title %}{{ profile_user.username }}'s Profile{% endblock %}
-
 {% block content %}
 
-    <!-- Name Header -->
-    <h1>
-        {% if profile_user.profile.nickname %}
-            {{ profile_user.profile.nickname }}
-        {% else %}
-            {{ profile_user.username }}
+<div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-family: sans-serif;">
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="margin: 0; color: #333;">
+            {% if profile_user.profile.nickname %}
+                {{ profile_user.profile.nickname }}
+            {% else %}
+                {{ profile_user.username }}
+            {% endif %}
+        </h1>
+        <p style="color: #777; margin-top: 5px;">@{{ profile_user.username }}</p>
+
+        <!-- FRIEND STATUS BUTTONS -->
+        <div style="margin-top: 15px;">
+            {% if friend_status == 'self' %}
+                <a href="{% url 'friends_list' profile_user.username %}" class="btn btn-outline-primary btn-sm">
+                    👥 Friends ({{ profile_user.profile.friends.count }})
+                </a>
+                <a href="{% url 'notifications' %}" class="btn btn-outline-warning btn-sm">🔔 Notifications</a>
+                <a href="{% url 'edit_profile' %}" class="btn btn-outline-secondary btn-sm">✏️ Edit</a>
+                
+            {% elif friend_status == 'friends' %}
+                <a href="{% url 'friends_list' profile_user.username %}" class="btn btn-success btn-sm">
+                    ✅ Friends ({{ profile_user.profile.friends.count }})
+                </a>
+                
+            {% elif friend_status == 'request_sent' %}
+                <button class="btn btn-secondary btn-sm" disabled>⏳ Request Sent</button>
+                
+            {% elif friend_status == 'request_received' %}
+                <a href="{% url 'notifications' %}" class="btn btn-primary btn-sm">Respond to Request</a>
+                
+            {% else %}
+                <a href="{% url 'send_friend_request' profile_user.id %}" class="btn btn-primary btn-sm">➕ Add Friend</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #eee;">
+
+    <!-- DETAILS -->
+    <div style="margin-top: 20px;">
+        {% if profile_user.profile.birthday %}
+            <p style="font-size: 1.1em; margin-bottom: 15px;">
+                🎂 <strong>Birthday:</strong> {{ profile_user.profile.birthday|date:"F jS" }}
+            </p>
         {% endif %}
-    </h1>
-    
-    <p>@{{ profile_user.username }}</p>
 
-    <hr>
-
-    <!-- Birthday -->
-    {% if profile_user.profile.birthday %}
-        <p>
-            <strong>Birthday:</strong> {{ profile_user.profile.birthday|date:"F jS" }}
-        </p>
-    {% endif %}
-
-    <!-- Bio -->
-    {% if profile_user.profile.bio %}
-        <h3>About Me:</h3>
-        <p>{{ profile_user.profile.bio|linebreaks }}</p>
-    {% else %}
-        <p>No bio added yet.</p>
-    {% endif %}
-
-    <!-- Edit Button (Only for owner) -->
-    {% if request.user == profile_user %}
-        <hr>
-        <p>
-            <a href="{% url 'edit_profile' %}">Edit Profile</a>
-        </p>
-    {% endif %}
-
-    <a href="{% url 'home' %}">Go back home</a>
-
+        {% if profile_user.profile.bio %}
+            <div style="margin-top: 20px;">
+                <strong>📝 About Me:</strong>
+                <div style="margin-top: 10px; background-color: #f9f9f9; padding: 15px; border-radius: 5px; font-style: italic; color: #555; line-height: 1.5;">
+                    {{ profile_user.profile.bio|linebreaks }}
+                </div>
+            </div>
+        {% else %}
+            <p style="color: #999; font-style: italic;">No bio added yet.</p>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

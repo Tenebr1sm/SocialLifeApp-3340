@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ viewed_user.username }}'s Friends{% endblock %}
+{% block content %}
+<div class="container" style="max-width: 600px; margin-top: 30px;">
+    
+    <!-- 🚨 DYNAMIC TITLE -->
+    <h2>
+        {% if viewed_user == request.user %}
+            👥 My Friends
+        {% else %}
+            👥 {{ viewed_user.username }}'s Friends
+        {% endif %}
+    </h2>
+    <hr>
+
+    {% if friends %}
+        <div class="list-group">
+            {% for friend_profile in friends %}
+                <a href="{% url 'profile' friend_profile.user.username %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <span style="font-weight: bold; font-size: 1.1em;">
+                            {% if friend_profile.nickname %}
+                                {{ friend_profile.nickname }}
+                            {% else %}
+                                {{ friend_profile.user.username }}
+                            {% endif %}
+                        </span>
+                        <br>
+                        <small class="text-muted">@{{ friend_profile.user.username }}</small>
+                    </div>
+                    
+                    {% if friend_profile.birthday %}
+                        <span class="badge bg-light text-dark border">🎂 {{ friend_profile.birthday|date:"M j" }}</span>
+                    {% endif %}
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            {% if viewed_user == request.user %}
+                <h4>You haven't added any friends yet.</h4>
+                <p>Go find your <a href="{% url 'birthday_twins' %}" class="alert-link">Birthday Twins</a>!</p>
+            {% else %}
+                <h4>{{ viewed_user.username }} hasn't added any friends yet.</h4>
+            {% endif %}
+        </div>
+    {% endif %}
+    
+    <div style="margin-top: 20px;">
+        <a href="{% url 'profile' viewed_user.username %}" class="btn btn-secondary btn-sm">Back to Profile</a>
+    </div>
+</div>
+{% endblock %}

@@ -20,13 +20,16 @@
 <body>
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <!-- 
-         🚨 CHANGED TO 'container-fluid' 🚨
-         This pushes the logo to the far left and the buttons to the far right.
-         I also added 'px-4' (padding-x-4) so they aren't touching the literal edge of the screen.
-      -->
       <div class="container-fluid px-4">
-        <a class="navbar-brand fw-bold" href="{% url 'home' %}">🍰 CakeDay</a>
+        <!-- 
+           🚨 CHANGED href TO 'index' 🚨
+           We changed {% url 'home' %} to {% url 'index' %}.
+           The 'index' view handles the logic: 
+           - If logged in -> Go to Home
+           - If logged out -> Go to Login
+           This prevents the error when clicking the logo after logging out.
+        -->
+        <a class="navbar-brand fw-bold" href="{% url 'index' %}">🍰 CakeDay</a>
         
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
           <span class="navbar-toggler-icon"></span>
@@ -37,11 +40,7 @@
             
             {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <!-- 
-                       CHANGED TO SPAN: 
-                       Using a <span> instead of an <a> tag makes it unclickable text.
-                       The 'nav-link' class keeps the spacing consistent.
-                    -->
+                    <!-- Unclickable Hello message -->
                     <span class="nav-link">
                         Hello, {{ user.username }}!
                     </span>

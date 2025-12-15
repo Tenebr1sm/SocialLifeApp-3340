@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<div class="container" style="max-width: 600px; margin-top: 30px;">
+    <h2>🔔 Notifications</h2>
+    <hr>
+    <h3>Friend Requests</h3>
+    
+    {% if received_requests %}
+        <ul class="list-group">
+            {% for req in received_requests %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ req.from_user.username }}</strong> wants to be friends.
+                    </div>
+                    <div>
+                        <a href="{% url 'accept_friend_request' req.id %}" class="btn btn-success btn-sm">Accept</a>
+                        <a href="{% url 'decline_friend_request' req.id %}" class="btn btn-outline-secondary btn-sm">Decline</a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted">No new friend requests.</p>
+    {% endif %}
+    
+    <div style="margin-top: 20px;">
+        <a href="{% url 'profile' user.username %}" class="btn btn-link">Back to Profile</a>
+    </div>
+</div>
+{% endblock %}
+
