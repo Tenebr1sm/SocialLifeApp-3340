@@ -3,43 +3,150 @@
 {% block title %}{{ profile_user.username }}'s Profile{% endblock %}
 
 {% block content %}
+<style>
+    body, html { margin: 0; padding: 0; height: 100%; }
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Poppins:wght@300;400;500;600&display=swap');
 
-    <!-- Name Header -->
-    <h1>
-        {% if profile_user.profile.nickname %}
-            {{ profile_user.profile.nickname }}
-        {% else %}
-            {{ profile_user.username }}
+    .main-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        min-height: calc(100vh - 56px);
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #FFF6E5 0%, #FFEFF2 100%);
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .profile-card {
+        width: 100%;
+        max-width: 420px;
+        padding: 3rem;
+        background-color: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(255, 105, 135, 0.15);
+        text-align: center;
+    }
+
+    .profile-card h1 {
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+        font-style: italic;
+        font-size: 2.8rem;
+        margin: 0;
+        background: -webkit-linear-gradient(45deg, #FF6584, #FF8E53);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1.2;
+    }
+
+    .handle {
+        color: #888;
+        font-size: 1rem;
+        margin-top: 5px;
+        margin-bottom: 2rem;
+    }
+
+    .info-section {
+        text-align: left;
+        background: #fafafa;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #f0f0f0;
+        margin-bottom: 20px;
+    }
+
+    .info-section h3 {
+        font-size: 1rem;
+        color: #FF6584;
+        margin-top: 0;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .info-section p {
+        color: #555;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .btn-edit {
+        display: inline-block;
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(to right, #FF6584, #FF8E53);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-decoration: none;
+        box-sizing: border-box;
+        box-shadow: 0 5px 15px rgba(255, 101, 132, 0.4);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-edit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(255, 101, 132, 0.5);
+        color: white;
+    }
+
+    .footer-link {
+        margin-top: 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .footer-link a {
+        color: #999;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+
+    .footer-link a:hover {
+        color: #FF6584;
+    }
+</style>
+
+<div class="main-container">
+    <div class="profile-card">
+        
+        <h1>
+            {% if profile_user.profile.nickname %}
+                {{ profile_user.profile.nickname }}
+            {% else %}
+                {{ profile_user.username }}
+            {% endif %}
+        </h1>
+        <p class="handle">@{{ profile_user.username }}</p>
+
+        <div class="info-section">
+            {% if profile_user.profile.birthday %}
+                <div style="margin-bottom: 15px;">
+                    <h3>Birthday</h3>
+                    <p>{{ profile_user.profile.birthday|date:"F jS" }} 🎂</p>
+                </div>
+            {% endif %}
+
+            <h3>About Me</h3>
+            {% if profile_user.profile.bio %}
+                <p>{{ profile_user.profile.bio|linebreaksbr }}</p>
+            {% else %}
+                <p style="font-style: italic; color: #aaa;">No bio added yet.</p>
+            {% endif %}
+        </div>
+
+        {% if request.user == profile_user %}
+            <a href="{% url 'edit_profile' %}" class="btn-edit">Edit Profile</a>
         {% endif %}
-    </h1>
-    
-    <p>@{{ profile_user.username }}</p>
 
-    <hr>
+        <div class="footer-link">
+            <a href="{% url 'home' %}">← Go back home</a>
+        </div>
 
-    <!-- Birthday -->
-    {% if profile_user.profile.birthday %}
-        <p>
-            <strong>Birthday:</strong> {{ profile_user.profile.birthday|date:"F jS" }}
-        </p>
-    {% endif %}
-
-    <!-- Bio -->
-    {% if profile_user.profile.bio %}
-        <h3>About Me:</h3>
-        <p>{{ profile_user.profile.bio|linebreaks }}</p>
-    {% else %}
-        <p>No bio added yet.</p>
-    {% endif %}
-
-    <!-- Edit Button (Only for owner) -->
-    {% if request.user == profile_user %}
-        <hr>
-        <p>
-            <a href="{% url 'edit_profile' %}">Edit Profile</a>
-        </p>
-    {% endif %}
-
-    <a href="{% url 'home' %}">Go back home</a>
-
+    </div>
+</div>
 {% endblock %}

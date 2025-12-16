@@ -3,40 +3,135 @@
 {% block title %}Edit Profile{% endblock %}
 
 {% block content %}
-    <h2>Edit Your Profile</h2>
+<style>
+    body, html { margin: 0; padding: 0; height: 100%; }
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Poppins:wght@300;400;500;600&display=swap');
 
-    <form method="POST">
-        {% csrf_token %}
-        
-        <!-- Loop through Nickname, Bio, and Birthday fields -->
-        {% for field in form %}
-                <label for="{{ field.id_for_label }}">
-                    {{ field.label }}
-                </label>
-                
-                <!-- Render the input field -->
-                {{ field }}
-                
-                <!-- Show Validation Errors (like "Bio is too long") -->
-                {% if field.errors %}
-                        {{ field.errors }}
-                {% endif %}
-                
-                <!-- Show Help Text (like "What should we call you?") -->
-                {% if field.help_text %}
-                    <small>{{ field.help_text }}</small>
-                {% endif %}
-        {% endfor %}
+    .main-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        min-height: calc(100vh - 56px);
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #FFF6E5 0%, #FFEFF2 100%);
+        padding: 20px;
+        box-sizing: border-box;
+    }
 
-            <!-- Save Button -->
-            <button type="submit" class="btn">
-                Save Changes
-            </button>
+    .edit-card {
+        width: 100%;
+        max-width: 450px;
+        padding: 3rem;
+        background-color: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(255, 105, 135, 0.15);
+        text-align: center;
+    }
+
+    .edit-card h2 {
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+        font-style: italic;
+        font-size: 2.8rem;
+        margin: 0 0 1.5rem 0;
+        background: -webkit-linear-gradient(45deg, #FF6584, #FF8E53);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .edit-card input, .edit-card textarea {
+        width: 100%;
+        padding: 14px;
+        margin-bottom: 5px;
+        border: 2px solid #f0f0f0;
+        border-radius: 12px;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+        background-color: #fafafa;
+        transition: all 0.3s ease;
+    }
+
+    .edit-card textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .edit-card input:focus, .edit-card textarea:focus {
+        border-color: #FF6584;
+        background-color: white;
+        box-shadow: 0 0 0 4px rgba(255, 101, 132, 0.1);
+        outline: none;
+    }
+
+    .edit-card button {
+        width: 100%;
+        padding: 14px;
+        margin-top: 15px;
+        background: linear-gradient(to right, #FF6584, #FF8E53);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: 'Poppins', sans-serif;
+        box-shadow: 0 5px 15px rgba(255, 101, 132, 0.4);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .edit-card button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(255, 101, 132, 0.5);
+    }
+
+    .cancel-link {
+        display: block;
+        margin-top: 20px;
+        color: #999;
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: color 0.2s;
+    }
+    
+    .cancel-link:hover {
+        color: #FF6584;
+    }
+</style>
+
+<div class="main-container">
+    <div class="edit-card">
+        <h2>Edit Profile</h2>
+
+        <form method="POST">
+            {% csrf_token %}
             
-            <!-- Cancel Button (Goes back to your profile page) -->
-            <a href="{% url 'profile' request.user.username %}" class="btn">
+            {% for field in form %}
+                <div style="text-align: left; margin-bottom: 15px;">
+                    <label for="{{ field.id_for_label }}" style="font-weight: 600; color: #666; margin-left: 5px; font-size: 0.9rem;">
+                        {{ field.label }}
+                    </label>
+                    
+                    {{ field }}
+                    
+                    {% if field.help_text %}
+                        <small style="color: #aaa; margin-left: 5px;">{{ field.help_text }}</small>
+                    {% endif %}
+
+                    {% if field.errors %}
+                        <div style="color: #d93025; font-size: 0.85rem; margin-top: 5px;">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit">Save Changes</button>
+            
+            <a href="{% url 'profile' request.user.username %}" class="cancel-link">
                 Cancel
             </a>
-    </form>
-
+        </form>
+    </div>
+</div>
 {% endblock %}
