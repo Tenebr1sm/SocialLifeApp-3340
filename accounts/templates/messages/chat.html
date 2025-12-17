@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Chat with {{ other_user.username }}{% endblock %}
+{% block content %}
+<div class="container mt-4" style="max-width: 600px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Chat with <a href="{% url 'profile' other_user.username %}">{{ other_user.username }}</a></h4>
+        <a href="{% url 'inbox' %}" class="btn btn-outline-secondary btn-sm">Back to Inbox</a>
+    </div>
+
+    <!-- Message History -->
+    <div class="card mb-3">
+        <div class="card-body" style="height: 400px; overflow-y: auto; background-color: #f8f9fa;">
+            {% for msg in messages %}
+                <div class="d-flex {% if msg.sender == user %}justify-content-end{% else %}justify-content-start{% endif %} mb-2">
+                    <div class="card p-2 {% if msg.sender == user %}bg-primary text-white{% else %}bg-white border{% endif %}" style="max-width: 75%; border-radius: 15px;">
+                        <p class="m-0">{{ msg.content }}</p>
+                        <small class="{% if msg.sender == user %}text-light{% else %}text-muted{% endif %}" style="font-size: 0.7em;">
+                            {{ msg.timestamp|time:"g:i A" }}
+                        </small>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-center text-muted mt-5">Start the conversation!</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Send Message Form -->
+    <form method="POST">
+        {% csrf_token %}
+        <div class="input-group">
+            {{ form.content }}
+            <button class="btn btn-primary" type="submit">Send</button>
+        </div>
+    </form>
+</div>
+
+<!-- Scroll to bottom script -->
+<script>
+    var chatBox = document.querySelector('.card-body');
+    chatBox.scrollTop = chatBox.scrollHeight;
+</script>
+{% endblock %}

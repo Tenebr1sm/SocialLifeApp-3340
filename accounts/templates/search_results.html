@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 700px; margin-top: 30px;">
+    <h2>🔍 Search Results for "{{ query }}"</h2>
+    <hr>
+
+    {% if results %}
+        <div class="list-group">
+            {% for user_result in results %}
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <span style="font-weight: bold; font-size: 1.1em;">
+                            {% if user_result.profile.nickname %}
+                                {{ user_result.profile.nickname }}
+                            {% else %}
+                                {{ user_result.username }}
+                            {% endif %}
+                        </span>
+                        <br>
+                        <small class="text-muted">@{{ user_result.username }}</small>
+                    </div>
+                    
+                    <a href="{% url 'profile' user_result.username %}" class="btn btn-outline-primary btn-sm">
+                        View Profile
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% elif query == user.username %}
+        <h4> thats you, silly </h4>
+    {% else %}
+        <div class="alert alert-warning text-center">
+            <h4>No users found matching "{{ query }}".</h4>
+            <p>Try searching for a different username or nickname.</p>
+        </div>
+    {% endif %}
+    
+    <div style="margin-top: 20px;">
+        <a href="{% url 'home' %}" class="btn btn-secondary btn-sm">Back to Home</a>
+    </div>
+</div>
+{% endblock %}

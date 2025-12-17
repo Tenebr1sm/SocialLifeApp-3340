@@ -4,31 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CakeDay</title>
-    <!-- Load Bootstrap CSS -->
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
+    <!-- Global Fonts & Styles -->
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+        
         body {
-            background-color: pink; /* Your chosen color */
+            font-family: 'Poppins', sans-serif;
+            background-color: #fff0f3; /* Soft pink background for all pages */
             min-height: 100vh;
+            margin: 0;
+            padding: 0;
         }
+        
         .navbar {
-            box-shadow: 0 2px 4px rgba(0,0,0,.1); /* Adds a subtle shadow under nav */
+            box-shadow: 0 2px 4px rgba(0,0,0,.05);
+            background-color: #ffffff !important;
+        }
+        
+        .navbar-brand {
+            color: #ff6b81 !important;
+        }
+        
+        /* Global Button Styles to match the theme */
+        .btn-primary {
+            background-color: #ff6b81;
+            border-color: #ff6b81;
+        }
+        .btn-primary:hover {
+            background-color: #ff4757;
+            border-color: #ff4757;
+        }
+        
+        .btn-outline-primary {
+            color: #ff6b81;
+            border-color: #ff6b81;
+        }
+        .btn-outline-primary:hover {
+            background-color: #ff6b81;
+            color: white;
+        }
+
+        /* Specific style for username in navbar */
+        .nav-username {
+            font-weight: 600;
+            color: #333;
+            transition: color 0.2s;
+        }
+        .nav-username:hover {
+            text-decoration: underline !important;
+            color: #ff6b81 !important;
         }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light">
       <div class="container-fluid px-4">
-        <!-- 
-           🚨 CHANGED href TO 'index' 🚨
-           We changed {% url 'home' %} to {% url 'index' %}.
-           The 'index' view handles the logic: 
-           - If logged in -> Go to Home
-           - If logged out -> Go to Login
-           This prevents the error when clicking the logo after logging out.
-        -->
         <a class="navbar-brand fw-bold" href="{% url 'index' %}">🍰 CakeDay</a>
         
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -36,17 +70,28 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            
+          
+          {% if user.is_authenticated %}
+          <!-- 
+             🚨 CENTERED SEARCH BAR UPDATE 🚨
+             Changed 'ms-auto me-3' to 'mx-auto' to center the form.
+             Added style="width: 100%; max-width: 500px;" to give it a nice size.
+          -->
+          <form class="d-flex mx-auto" style="width: 100%; max-width: 500px;" action="{% url 'search_users' %}" method="GET">
+            <input class="form-control me-2" type="search" name="q" placeholder="Search friends..." aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
+          {% endif %}
+
+          <ul class="navbar-nav {% if not user.is_authenticated %}ms-auto{% endif %}">
             {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <!-- Unclickable Hello message -->
-                    <span class="nav-link">
-                        Hello, {{ user.username }}!
-                    </span>
+                    <a class="nav-link nav-username" href="{% url 'profile' user.username %}">
+                        {{ user.username }}
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link btn btn-outline-danger btn-sm ms-2" href="{% url 'logout' %}">Logout</a> 
+                    <a class="nav-link btn btn-sm ms-2 text-danger" href="{% url 'logout' %}">Logout</a> 
                 </li>
             {% else %}
                 <li class="nav-item">
@@ -56,7 +101,6 @@
                     <a class="btn btn-primary text-white ms-2" href="{% url 'register' %}">Register</a>
                 </li>
             {% endif %}
-            
           </ul>
         </div>
       </div>
@@ -68,6 +112,5 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>

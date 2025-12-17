@@ -1,44 +1,144 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-10 col-lg-8">
-      
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <h2 class="card-title text-center mb-4">Create Account</h2>
+<style>
+    body, html { margin: 0; padding: 0; height: 100%; }
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Poppins:wght@300;400;500;600&display=swap');
 
-          {% if messages %}
+    .main-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        /* Subtract navbar height approximately */
+        min-height: calc(100vh - 56px);
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #FFF6E5 0%, #FFEFF2 100%);
+        padding: 20px; /* Prevents card from touching edges on mobile */
+        box-sizing: border-box;
+    }
+
+    .auth-card {
+        width: 100%;
+        max-width: 400px;
+        padding: 3rem;
+        background-color: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(255, 105, 135, 0.15);
+        text-align: center;
+    }
+
+    .auth-card h2 {
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+        font-style: italic;
+        font-size: 2.8rem;
+        margin: 0 0 1rem 0;
+        background: -webkit-linear-gradient(45deg, #FF6584, #FF8E53);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Style Django form inputs */
+    .auth-card input, .auth-card select {
+        width: 100%;
+        padding: 14px;
+        margin-bottom: 15px;
+        border: 2px solid #f0f0f0;
+        border-radius: 12px;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+        background-color: #fafafa;
+        transition: all 0.3s ease;
+    }
+
+    .auth-card input:focus {
+        border-color: #FF6584;
+        background-color: white;
+        box-shadow: 0 0 0 4px rgba(255, 101, 132, 0.1);
+        outline: none;
+    }
+    
+    .helptext { display: none; } 
+    
+    .auth-card button {
+        width: 100%;
+        padding: 14px;
+        margin-top: 10px;
+        background: linear-gradient(to right, #FF6584, #FF8E53);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: 'Poppins', sans-serif;
+        box-shadow: 0 5px 15px rgba(255, 101, 132, 0.4);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .auth-card button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(255, 101, 132, 0.5);
+    }
+
+    .footer-link {
+        margin-top: 2rem;
+        font-size: 0.9rem;
+        color: #999;
+    }
+
+    .footer-link a {
+        color: #FF6584;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .error-msg {
+        color: #d93025;
+        font-size: 0.85rem;
+        background: #ffe6e6;
+        padding: 8px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        text-align: left;
+    }
+</style>
+
+<div class="main-container">
+    <div class="auth-card">
+        <h2>Join the Party</h2>
+        
+        {% if messages %}
             {% for message in messages %}
-              <div class="alert alert-danger" role="alert">
-                {{ message }}
-              </div>
+                <div class="error-msg">{{ message }}</div>
             {% endfor %}
-          {% endif %}
+        {% endif %}
 
-          <form method="POST">
+        {% if form.errors %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <div class="error-msg">{{ field.label }}: {{ error }}</div>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
             {% csrf_token %}
             
-            <div class="mb-3">
-                {{ form.as_p }}
-            </div>
+            {% for field in form %}
+                <div style="text-align: left; margin-bottom: 5px;">
+                    <label style="font-size: 0.85rem; font-weight: 600; color: #666; margin-left: 5px;">{{ field.label }}</label>
+                </div>
+                {{ field }}
+            {% endfor %}
 
-            <div class="d-grid gap-2">
-              <button type="submit" class="btn btn-primary">Register</button>
-            </div>
-          </form>
-          
-          <hr class="my-4">
-          
-          <p class="text-center">
-            Already have an account? <a href="{% url 'login' %}" class="text-decoration-none">Login here</a>
-          </p>
-
+            <button type="submit">Register</button>
+        </form>
+        
+        <div class="footer-link">
+            <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
         </div>
-      </div>
-
     </div>
-  </div>
 </div>
 {% endblock %}

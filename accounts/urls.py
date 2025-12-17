@@ -22,12 +22,21 @@ urlpatterns = [
 
     # --- Friend System ---
     path('profile/<str:username>/friends/', views.friends_list_view, name='friends_list'),
-    
     path('notifications/', views.notifications_view, name='notifications'),
     path('friend-request/send/<int:user_id>/', views.send_friend_request, name='send_friend_request'),
     path('friend-request/accept/<int:request_id>/', views.accept_friend_request, name='accept_friend_request'),
     path('friend-request/decline/<int:request_id>/', views.decline_friend_request, name='decline_friend_request'),
 
-    # Public Profile (Must be at the bottom to avoid conflicts)
+    # --- Search ---
+    path('search/', views.search_users_view, name='search_users'),
+
+    # --- Messaging ---
+    path('inbox/', views.inbox_view, name='inbox'),
+    path('chat/<str:username>/', views.chat_view, name='chat'),
+
+    # --- Posts ---
+    path('post/delete/<int:post_id>/', views.delete_post, name='delete_post'),
+
+    # Public Profile (Must be at the bottom)
     path('profile/<str:username>/', views.profile_view, name='profile'),
 ]

@@ -2,28 +2,179 @@
 {% block title %}Home{% endblock %}
 {% block content %}
 
+<style>
+    /* Simple Layout Styles */
+    .dashboard-container {
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 1000px;
+        margin: 30px auto;
+        gap: 20px;
+        padding: 0 15px;
+        align-items: flex-start;
+    }
+    
+    .left-column {
+        flex: 1;
+        min-width: 250px;
+    }
+    
+    .right-column {
+        flex: 2;
+        min-width: 300px;
+    }
+
+    /* The "Simple Card" style you requested */
+    .simple-card {
+        background-color: white;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .btn-simple {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 8px;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+        color: white;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn-blue { background-color: #007bff; }
+    .btn-green { background-color: #28a745; }
+    .btn-gray { background-color: #6c757d; }
+    .btn-orange { background-color: #fd7e14; }
+
+    .list-item {
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .list-item:last-child { border-bottom: none; }
+
+    .post-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-size: 0.9em;
+        color: #666;
+    }
+</style>
+
+<!-- Messages Area -->
 {% if messages %}
+<div style="max-width: 1000px; margin: 20px auto; padding: 0 15px;">
     {% for message in messages %}
-    <div style="padding: 10px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 5px; margin-bottom: 20px;">
+    <div style="padding: 10px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 5px; margin-bottom: 10px;">
         {{ message }}
     </div>
     {% endfor %}
+</div>
 {% endif %}
 
-<div style="text-align: center; margin-top: 50px;">
-    <h2>Welcome to CakeDay, {{ user.username }}!</h2>
-    <p style="color: #666; font-size: 1.1em;">This is your dashboard.</p>
+<div class="dashboard-container">
+    
+    <!-- LEFT SIDEBAR -->
+    <div class="left-column">
+        
+        <!-- Welcome & Menu -->
+        <div class="simple-card">
+            <h3 style="margin-top: 0;">Hi, {{ user.username }}!</h3>
+            <p style="color: #666; margin-bottom: 20px;">Welcome to your dashboard.</p>
+            
+            <a href="{% url 'profile' user.username %}" class="btn-simple btn-blue">View My Profile</a>
+            <a href="{% url 'friends_list' user.username %}" class="btn-simple btn-gray">My Friends</a>
+            <a href="{% url 'inbox' %}" class="btn-simple btn-gray">Messages</a>
+            <a href="{% url 'birthday_twins' %}" class="btn-simple btn-orange">Find Twins</a>
+        </div>
 
-    <div style="margin-top: 30px;">
-        <a href="{% url 'profile' user.username %}" class="btn btn-primary" style="padding: 15px 30px; font-size: 1.2em; border-radius: 30px;">
-            View My Profile
-        </a>
+        <!-- Upcoming Birthdays -->
+        <div class="simple-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h4 style="margin: 0;">Birthdays</h4>
+                <a href="{% url 'edit_profile' %}" style="font-size: 0.8em; color: #888;">(Next {{ notification_days }} days)</a>
+            </div>
+            
+            {% if upcoming_birthdays %}
+                {% for item in upcoming_birthdays %}
+                    <div class="list-item">
+                        <div>
+                            <a href="{% url 'profile' item.profile.user.username %}" style="font-weight: bold; text-decoration: none; color: #333;">
+                                {% if item.profile.nickname %}{{ item.profile.nickname }}{% else %}{{ item.profile.user.username }}{% endif %}
+                            </a>
+                            <br>
+                            <span style="font-size: 0.8em; color: #888;">
+                                {% if item.days_until == 0 %}Today!{% elif item.days_until == 1 %}Tomorrow{% else %}{{ item.days_until }} days{% endif %}
+                            </span>
+                        </div>
+                        <span style="background: #eee; padding: 2px 8px; border-radius: 10px; font-size: 0.85em;">
+                            {{ item.date|date:"M j" }}
+                        </span>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p style="color: #888; font-style: italic;">No birthdays coming up.</p>
+            {% endif %}
+        </div>
+
     </div>
 
-    <div style="margin-top: 20px;">
-        <a href="{% url 'birthday_twins' %}" class="btn btn-success" style="padding: 15px 30px; font-size: 1.2em; border-radius: 30px; background-color: #ff6b81; border: none;">
-            🎂 Find Birthday Twins
-        </a>
+    <!-- RIGHT COLUMN (FEED) -->
+    <div class="right-column">
+        
+        <!-- Post Form -->
+        <div class="simple-card">
+            <h4 style="margin-top: 0;">Bulletin Board</h4>
+            <form method="POST">
+                {% csrf_token %}
+                <div style="margin-bottom: 10px;">
+                    <!-- Simple textarea style -->
+                    <textarea name="content" rows="3" style="width: 100%; border: 1px solid #ddd; border-radius: 5px; padding: 10px; box-sizing: border-box;" placeholder="Share something..."></textarea>
+                </div>
+                <div style="text-align: right;">
+                    <button type="submit" class="btn-simple btn-green" style="width: auto; display: inline-block; padding: 8px 20px; margin: 0;">Post</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Posts List -->
+        {% if posts %}
+            {% for post in posts %}
+                <div class="simple-card">
+                    <div class="post-header">
+                        <div>
+                            <a href="{% url 'profile' post.author.username %}" style="font-weight: bold; text-decoration: none; color: #333;">
+                                {% if post.author.profile.nickname %}{{ post.author.profile.nickname }}{% else %}{{ post.author.username }}{% endif %}
+                            </a>
+                            <span style="margin: 0 5px;">•</span>
+                            <span>{{ post.created_at|timesince }} ago</span>
+                        </div>
+                        {% if post.author == user %}
+                            <a href="{% url 'delete_post' post.id %}" onclick="return confirm('Delete this post?');" style="color: red; text-decoration: none; font-size: 1.2em;">&times;</a>
+                        {% endif %}
+                    </div>
+                    <div style="line-height: 1.5; color: #444;">
+                        {{ post.content|linebreaksbr }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="simple-card" style="text-align: center; color: #888; padding: 40px;">
+                <p>No posts yet. Be the first to share something!</p>
+            </div>
+        {% endif %}
+
     </div>
+
 </div>
+
 {% endblock %}

@@ -1,64 +1,276 @@
 {% extends "base.html" %}
-{% block title %}{{ profile_user.username }}'s Profile{% endblock %}
-{% block content %}
 
-<div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-family: sans-serif;">
-    <div style="text-align: center; margin-bottom: 30px;">
-        <h1 style="margin: 0; color: #333;">
+{% block title %}{{ profile_user.username }}'s Profile{% endblock %}
+
+{% block content %}
+<style>
+    body, html { margin: 0; padding: 0; height: 100%; }
+    /* Removed Playfair Display, kept Poppins for a clean, casual look */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+    .main-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        min-height: calc(100vh - 56px); 
+        font-family: 'Poppins', sans-serif;
+        /* Changed from complex gradient to a simple, soft background color */
+        background-color: #fff0f3; 
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .profile-card {
+        width: 100%;
+        max-width: 480px;
+        padding: 2.5rem;
+        background-color: #ffffff;
+        border-radius: 16px;
+        /* Simpler shadow */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        text-align: center;
+        border: 1px solid #f0f0f0;
+    }
+
+    .profile-card h1 {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        font-style: normal; /* Removed italics */
+        font-size: 2rem;
+        margin: 0;
+        /* Removed text gradient, used a solid dark color */
+        color: #333;
+        line-height: 1.2;
+    }
+
+    .handle {
+        color: #888;
+        font-size: 1rem;
+        margin-top: 5px;
+        margin-bottom: 1rem;
+    }
+
+    .private-badge {
+        background-color: #e9ecef;
+        color: #495057;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        display: inline-block;
+        margin-bottom: 1.5rem;
+    }
+
+    .info-section {
+        text-align: left;
+        background: #fff; /* Removed gray background for a cleaner look */
+        padding: 10px 0;
+        margin-bottom: 20px;
+    }
+
+    .info-section h3 {
+        font-size: 0.85rem;
+        color: #ff6b81; /* Soft pink/red */
+        margin-top: 15px;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+
+    .info-section p {
+        color: #444;
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    /* --- Button Styles --- */
+    .btn-custom {
+        display: inline-block;
+        width: 100%;
+        padding: 10px 15px;
+        margin-bottom: 10px;
+        color: white;
+        border: none;
+        border-radius: 8px; /* Slightly less rounded */
+        font-size: 0.95rem;
+        font-weight: 500;
+        text-decoration: none;
+        box-sizing: border-box;
+        cursor: pointer;
+        transition: background 0.2s;
+        text-align: center;
+    }
+
+    .btn-custom:hover {
+        opacity: 0.9;
+    }
+
+    /* Flat colors instead of gradients */
+    .btn-primary-gradient {
+        background-color: #ff6b81; 
+        color: white;
+    }
+    
+    .btn-action {
+        background-color: #4A90E2;
+        color: white;
+    }
+
+    .btn-secondary-action {
+        background-color: white;
+        border: 1px solid #ddd;
+        color: #555;
+    }
+    .btn-secondary-action:hover {
+        background-color: #f8f9fa;
+        color: #333;
+    }
+
+    .btn-disabled {
+        background-color: #e9ecef;
+        color: #adb5bd;
+        cursor: default;
+    }
+    .btn-disabled:hover {
+        opacity: 1;
+    }
+
+    .footer-link {
+        margin-top: 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .footer-link a {
+        color: #888;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .footer-link a:hover {
+        color: #ff6b81;
+        text-decoration: underline;
+    }
+    
+    /* Messages */
+    .msg-box {
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        font-size: 0.9rem;
+    }
+    .msg-success { background-color: #e6fcf5; color: #0ca678; border: 1px solid #c3fae8; }
+    .msg-info { background-color: #e7f5ff; color: #1c7ed6; border: 1px solid #d0ebff; }
+</style>
+
+<div class="main-container">
+    <div class="profile-card">
+        
+        <!-- System Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="msg-box msg-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <!-- Name & Handle -->
+        <h1>
             {% if profile_user.profile.nickname %}
                 {{ profile_user.profile.nickname }}
             {% else %}
                 {{ profile_user.username }}
             {% endif %}
         </h1>
-        <p style="color: #777; margin-top: 5px;">@{{ profile_user.username }}</p>
+        <p class="handle">@{{ profile_user.username }}</p>
 
-        <!-- FRIEND STATUS BUTTONS -->
-        <div style="margin-top: 15px;">
-            {% if friend_status == 'self' %}
-                <a href="{% url 'friends_list' profile_user.username %}" class="btn btn-outline-primary btn-sm">
-                    👥 Friends ({{ profile_user.profile.friends.count }})
-                </a>
-                <a href="{% url 'notifications' %}" class="btn btn-outline-warning btn-sm">🔔 Notifications</a>
-                <a href="{% url 'edit_profile' %}" class="btn btn-outline-secondary btn-sm">✏️ Edit</a>
-                
-            {% elif friend_status == 'friends' %}
-                <a href="{% url 'friends_list' profile_user.username %}" class="btn btn-success btn-sm">
-                    ✅ Friends ({{ profile_user.profile.friends.count }})
-                </a>
-                
-            {% elif friend_status == 'request_sent' %}
-                <button class="btn btn-secondary btn-sm" disabled>⏳ Request Sent</button>
-                
-            {% elif friend_status == 'request_received' %}
-                <a href="{% url 'notifications' %}" class="btn btn-primary btn-sm">Respond to Request</a>
-                
-            {% else %}
-                <a href="{% url 'send_friend_request' profile_user.id %}" class="btn btn-primary btn-sm">➕ Add Friend</a>
-            {% endif %}
-        </div>
-    </div>
-
-    <hr style="border: 0; border-top: 1px solid #eee;">
-
-    <!-- DETAILS -->
-    <div style="margin-top: 20px;">
-        {% if profile_user.profile.birthday %}
-            <p style="font-size: 1.1em; margin-bottom: 15px;">
-                🎂 <strong>Birthday:</strong> {{ profile_user.profile.birthday|date:"F jS" }}
-            </p>
+        <!-- Private Badge -->
+        {% if profile_user.profile.is_private %}
+            <span class="private-badge">🔒 Private Account</span>
         {% endif %}
 
-        {% if profile_user.profile.bio %}
-            <div style="margin-top: 20px;">
-                <strong>📝 About Me:</strong>
-                <div style="margin-top: 10px; background-color: #f9f9f9; padding: 15px; border-radius: 5px; font-style: italic; color: #555; line-height: 1.5;">
-                    {{ profile_user.profile.bio|linebreaks }}
-                </div>
+        <!-- 
+           INFO SECTION 
+           Only visible if public, friends, or self (handled by 'can_view_details')
+        -->
+        {% if can_view_details %}
+            <div class="info-section">
+                {% if profile_user.profile.birthday %}
+                    <div>
+                        <h3>Birthday</h3>
+                        <p>{{ profile_user.profile.birthday|date:"F jS, Y" }} 🎂</p>
+                    </div>
+                {% endif %}
+
+                <h3>About Me</h3>
+                {% if profile_user.profile.bio %}
+                    <p>{{ profile_user.profile.bio|linebreaksbr }}</p>
+                {% else %}
+                    <p style="font-style: italic; color: #aaa;">No bio added yet.</p>
+                {% endif %}
             </div>
         {% else %}
-            <p style="color: #999; font-style: italic;">No bio added yet.</p>
+            <!-- Locked View -->
+            <div class="info-section" style="text-align: center; border: 1px dashed #ddd; padding: 20px; border-radius: 8px;">
+                <p style="color: #ff6b81; font-weight: bold; margin-bottom: 5px;">🔒 Locked Profile</p>
+                <p style="font-size: 0.9rem;">You must be friends to view {{ profile_user.username }}'s birthday and bio.</p>
+            </div>
         {% endif %}
+
+        <!-- 
+           ACTION BUTTONS
+           Logic for Friend Status (Self, Friends, Sent, Received, None)
+        -->
+        <div style="margin-top: 20px;">
+            {% if friend_status == 'self' %}
+                <!-- 1. Viewing OWN Profile -->
+                <a href="{% url 'edit_profile' %}" class="btn-custom btn-primary-gradient">Edit Profile</a>
+                <div style="display: flex; gap: 10px;">
+                    <a href="{% url 'friends_list' profile_user.username %}" class="btn-custom btn-secondary-action">
+                        Friends ({{ profile_user.profile.friends.count }})
+                    </a>
+                    <a href="{% url 'inbox' %}" class="btn-custom btn-secondary-action">
+                        Messages
+                    </a>
+                </div>
+                <a href="{% url 'notifications' %}" class="btn-custom btn-action" style="background-color: #f0ad4e;">
+                    Notifications
+                </a>
+
+            {% elif friend_status == 'friends' %}
+                <!-- 2. Already Friends -->
+                <button class="btn-custom btn-disabled">✅ Friends</button>
+                <div style="display: flex; gap: 10px;">
+                    <a href="{% url 'chat' profile_user.username %}" class="btn-custom btn-primary-gradient">
+                        💬 Message
+                    </a>
+                    <a href="{% url 'friends_list' profile_user.username %}" class="btn-custom btn-secondary-action">
+                        View Friends
+                    </a>
+                </div>
+
+            {% elif friend_status == 'request_sent' %}
+                <!-- 3. Request Pending -->
+                <button class="btn-custom btn-disabled">⏳ Request Sent</button>
+            
+            {% elif friend_status == 'request_received' %}
+                <!-- 4. They sent YOU a request -->
+                <a href="{% url 'notifications' %}" class="btn-custom btn-action">Respond to Request</a>
+
+            {% else %}
+                <!-- 5. Not Friends -->
+                <a href="{% url 'send_friend_request' profile_user.id %}" class="btn-custom btn-primary-gradient">
+                    ➕ Add Friend
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="footer-link">
+            <a href="{% url 'home' %}">Back to home</a>
+        </div>
+
     </div>
 </div>
 {% endblock %}

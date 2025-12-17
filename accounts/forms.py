@@ -1,53 +1,53 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
-from .models import Profile
+from django.contrib.auth.forms import UserCreationForm
+from .models import Profile, Post, Message
 
+# --- Authentication Forms ---
 class CustomUserCreationForm(UserCreationForm):
-    """
-    A custom form that inherits from UserCreationForm and adds
-    email, fields with custom validation.
-    """
-    
-    # 1. Define the email field explicitly so we can make it required
-    email = forms.EmailField(required=True, help_text="Required. A valid email address.")
-
     class Meta(UserCreationForm.Meta):
-        model = User
-        # 2. Add fields to this list so they appear on the page
-        fields = ('username', 'email')
+        fields = UserCreationForm.Meta.fields + ('email',)
 
-    def clean_username(self):
-        """
-        Custom validation for username.
-        """
-        username = self.cleaned_data.get('username')
-        
-        # Rule 1: Minimum length
-        if len(username) < 5:
-            raise ValidationError("Username must be at least 5 characters long.")
-            
-        return username
-
-class BirthdayForm(forms.ModelForm): 
-    birthday = forms.DateField(
-        required=True,
-        help_text="Required. Enter your birthday!",
-        widget=forms.DateInput(attrs={'type': 'date'})
-    )
-
+class BirthdayForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['birthday']
+        widgets = {
+            'birthday': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+        }
 
+# --- Profile Management Forms ---
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
-        #allows user to edit their birthday and bio
-        fields = ['birthday','bio', 'nickname']
+        fields = [
+            'nickname', 
+            'bio', 
+            'birthday', 
+            'is_private',
+            'birthday_notification_days'
+        ]
         widgets = {
-            'birthday': forms.DateInput(attrs={'type': 'date'}),
-            'nickname': forms.TextInput(attrs={'placeholder': 'Enter a nickname (optional)'}),
-            'bio': forms.Textarea(attrs={'rows': 4, 'cols': 40, 'placeholder': 'Tell us about yourself!'}),
+            'bio': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+            'birthday': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'nickname': forms.TextInput(attrs={'class': 'form-control'}),
+            'is_private': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'birthday_notification_days': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 365}),
+        }
+
+# --- Post and Message Forms ---
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'What\'s happening?'})
+        }
+
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['content']
+        widgets = {
+            'content': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Type a message...', 'autocomplete': 'off'})
         }

@@ -3,40 +3,180 @@
 {% block title %}Edit Profile{% endblock %}
 
 {% block content %}
-    <h2>Edit Your Profile</h2>
+<style>
+    /* Edit Profile Specific Styles */
+    .main-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        min-height: calc(100vh - 56px); 
+        padding: 30px 20px;
+        box-sizing: border-box;
+    }
 
-    <form method="POST">
-        {% csrf_token %}
+    .edit-card {
+        width: 100%;
+        max-width: 500px;
+        padding: 2.5rem;
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        border: 1px solid #f0f0f0;
+    }
+
+    .edit-card h2 {
+        font-weight: 600;
+        font-size: 1.8rem;
+        margin-top: 0;
+        margin-bottom: 25px;
+        color: #333;
+        text-align: center;
+    }
+
+    /* Form Styles */
+    label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 8px;
+        color: #444;
+        font-size: 0.95rem;
+    }
+
+    input[type="text"], 
+    input[type="number"], 
+    input[type="date"], 
+    textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-family: inherit; /* Use Poppins */
+        font-size: 1rem;
+        box-sizing: border-box;
+        transition: border-color 0.2s;
+    }
+
+    input:focus, textarea:focus {
+        outline: none;
+        border-color: #ff6b81;
+    }
+
+    /* Checkbox styling */
+    input[type="checkbox"] {
+        /* Force native appearance to fix invisible box */
+        -webkit-appearance: checkbox !important;
+        -moz-appearance: checkbox !important;
+        appearance: checkbox !important;
+        display: inline-block !important;
         
-        <!-- Loop through Nickname, Bio, and Birthday fields -->
-        {% for field in form %}
-                <label for="{{ field.id_for_label }}">
-                    {{ field.label }}
-                </label>
-                
-                <!-- Render the input field -->
-                {{ field }}
-                
-                <!-- Show Validation Errors (like "Bio is too long") -->
-                {% if field.errors %}
-                        {{ field.errors }}
-                {% endif %}
-                
-                <!-- Show Help Text (like "What should we call you?") -->
-                {% if field.help_text %}
-                    <small>{{ field.help_text }}</small>
-                {% endif %}
-        {% endfor %}
+        /* Size and spacing */
+        width: 18px !important;
+        height: 18px !important;
+        margin-right: 10px;
+        cursor: pointer;
+    }
 
-            <!-- Save Button -->
-            <button type="submit" class="btn">
-                Save Changes
-            </button>
+    .help-text {
+        font-size: 0.85rem;
+        color: #888;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .error-text {
+        color: #dc3545;
+        font-size: 0.9em;
+        margin-top: 5px;
+    }
+
+    /* Buttons */
+    .btn-save {
+        background-color: #28a745;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        font-size: 1rem;
+        transition: background 0.2s;
+    }
+    .btn-save:hover { background-color: #218838; }
+
+    .btn-cancel {
+        background-color: #6c757d;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        font-size: 1rem;
+        text-decoration: none;
+        text-align: center;
+        display: inline-block;
+        transition: background 0.2s;
+    }
+    .btn-cancel:hover { background-color: #5a6268; }
+
+    .btn-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+</style>
+
+<div class="main-container">
+    <div class="edit-card">
+        <h2>Edit Your Profile</h2>
+
+        <form method="POST">
+            {% csrf_token %}
             
-            <!-- Cancel Button (Goes back to your profile page) -->
-            <a href="{% url 'profile' request.user.username %}" class="btn">
-                Cancel
-            </a>
-    </form>
-
+            {% for field in form %}
+                <div style="margin-bottom: 20px;">
+                    
+                    {% if field.name == 'is_private' %}
+                        <!-- Custom layout for Private Checkbox -->
+                        <div style="display: flex; align-items: center;">
+                            {{ field }}
+                            <label for="{{ field.id_for_label }}" style="margin: 0 0 0 10px; font-weight: 600; color: #333; cursor: pointer; display: inline;">
+                                {{ field.label }}
+                            </label>
+                        </div>
+                    {% else %}
+                        <!-- Standard Layout for other fields -->
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                    {% endif %}
+                    
+                    <!-- Errors -->
+                    {% if field.errors %}
+                        <div class="error-text">{{ field.errors }}</div>
+                    {% endif %}
+                    
+                    <!-- Help Text -->
+                    {% if field.help_text %}
+                        <small class="help-text">{{ field.help_text }}</small>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            
+            <div class="btn-group">
+                <button type="submit" class="btn-save">
+                    Save Changes
+                </button>
+                
+                <a href="#" onclick="history.back(); return false;" class="btn-cancel">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

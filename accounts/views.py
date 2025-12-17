@@ -4,8 +4,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db.models import Q
-from .forms import CustomUserCreationForm, BirthdayForm, ProfileUpdateForm
-from .models import Profile, FriendRequest
+from datetime import date
+from .forms import CustomUserCreationForm, BirthdayForm, ProfileUpdateForm, PostForm, MessageForm
+from .models import Profile, FriendRequest, Post, Message
 
 def index(request):
     if request.user.is_authenticated:
@@ -60,19 +61,94 @@ def register_view(request):
 def edit_profile_view(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
     if request.method == 'POST':
-        # Removed request.FILES here since we aren't doing images
         form = ProfileUpdateForm(request.POST, instance=profile)
         if form.is_valid():
             form.save()
             messages.success(request, "Profile updated successfully!")
-            return redirect('home')
+            return redirect('profile', username=request.user.username)
     else:
         form = ProfileUpdateForm(instance=profile)
     return render(request, 'profile/edit_profile.html', {'form': form})
 
 @login_required
 def home(request):
-    return render(request, 'home.html')
+    # --- 1. POST HANDLING ---
+    if request.method == 'POST':
+        post_form = PostForm(request.POST)
+        if post_form.is_valid():
+            new_post = post_form.save(commit=False)
+            new_post.author = request.user
+            new_post.save()
+            messages.success(request, "Posted to bulletin board!")
+            return redirect('home')
+    else:
+        post_form = PostForm()
+
+    # --- 2. GET SOCIAL FEED ---
+    friends = request.user.profile.friends.all()
+    friend_user_ids = [f.user.id for f in friends]
+    friend_user_ids.append(request.user.id) # Include myself
+    posts = Post.objects.filter(author__id__in=friend_user_ids).order_by('-created_at')
+
+    # --- 3. BIRTHDAYS HANDLING ---
+    
+    # Get user's preferred notification duration (defaults to 30 if not set or 0)
+    notification_days = request.user.profile.birthday_notification_days or 30
+    
+    upcoming_birthdays = []
+    all_friends_birthdays = [] # NEW: To store all friends with birthdays
+    today = date.today()
+    
+    for friend in friends:
+        if friend.birthday:
+            
+            # Add to the list of ALL friends with birthdays (for the second box)
+            all_friends_birthdays.append(friend) 
+            
+            # Logic to calculate the next birthday
+            try:
+                birthday_this_year = friend.birthday.replace(year=today.year)
+            except ValueError:
+                # Handle leap day gracefully if current year is not a leap year
+                birthday_this_year = friend.birthday.replace(year=today.year, month=3, day=1)
+
+            if birthday_this_year < today:
+                try:
+                    next_birthday = friend.birthday.replace(year=today.year + 1)
+                except ValueError:
+                    next_birthday = friend.birthday.replace(year=today.year + 1, month=3, day=1)
+            else:
+                next_birthday = birthday_this_year
+            
+            days_until = (next_birthday - today).days
+            
+            # Use the user's preferred notification duration
+            if 0 <= days_until <= notification_days:
+                upcoming_birthdays.append({
+                    'profile': friend,
+                    'days_until': days_until,
+                    'date': next_birthday
+                })
+    
+    upcoming_birthdays.sort(key=lambda x: x['days_until'])
+
+    return render(request, 'home.html', {
+        'upcoming_birthdays': upcoming_birthdays,
+        'all_friends_birthdays': all_friends_birthdays, # NEW CONTEXT VARIABLE
+        'notification_days': notification_days, # NEW CONTEXT VARIABLE
+        'posts': posts,
+        'post_form': post_form
+    })
+
+@login_required
+def delete_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    if request.user == post.author:
+        post.delete()
+        messages.success(request, "Post deleted successfully.")
+    else:
+        messages.error(request, "You cannot delete someone else's post.")
+    return redirect('home')
 
 @login_required
 def logout_view(request):
@@ -81,29 +157,31 @@ def logout_view(request):
         messages.info(request, "You have successfully logged out.")
     return redirect('login')
 
-# --- FRIEND & SOCIAL VIEWS ---
-
 @login_required
 def profile_view(request, username):
     profile_user = get_object_or_404(User, username=username)
     
     friend_status = 'none'
+    is_friend = False
+
     if request.user == profile_user:
         friend_status = 'self'
+        is_friend = True 
     else:
-        # Check if already friends
         if request.user.profile.friends.filter(user=profile_user).exists():
             friend_status = 'friends'
-        # Check if request sent
+            is_friend = True
         elif FriendRequest.objects.filter(from_user=request.user, to_user=profile_user).exists():
             friend_status = 'request_sent'
-        # Check if request received
         elif FriendRequest.objects.filter(from_user=profile_user, to_user=request.user).exists():
             friend_status = 'request_received'
 
+    can_view_details = (request.user == profile_user) or (not profile_user.profile.is_private) or is_friend
+
     return render(request, 'profile/profile.html', {
         'profile_user': profile_user, 
-        'friend_status': friend_status
+        'friend_status': friend_status,
+        'can_view_details': can_view_details
     })
 
 @login_required
@@ -115,7 +193,8 @@ def birthday_twins_view(request):
 
     twins = Profile.objects.filter(
         birthday__month=my_profile.birthday.month,
-        birthday__day=my_profile.birthday.day
+        birthday__day=my_profile.birthday.day,
+        is_private=False 
     ).exclude(user=request.user)
 
     return render(request, 'birthday_twins.html', {'twins': twins})
@@ -132,10 +211,8 @@ def send_friend_request(request, user_id):
 def accept_friend_request(request, request_id):
     friend_request = get_object_or_404(FriendRequest, id=request_id)
     if friend_request.to_user == request.user:
-        # Add to friends list (both ways)
         request.user.profile.friends.add(friend_request.from_user.profile)
         friend_request.from_user.profile.friends.add(request.user.profile)
-        # Delete request
         friend_request.delete()
         messages.success(request, f"You are now friends with {friend_request.from_user.username}!")
     return redirect('notifications')
@@ -161,3 +238,64 @@ def friends_list_view(request, username):
 def notifications_view(request):
     received_requests = FriendRequest.objects.filter(to_user=request.user)
     return render(request, 'notifications.html', {'received_requests': received_requests})
+
+@login_required
+def search_users_view(request):
+    query = request.GET.get('q')
+    results = []
+    
+    if query:
+        results = User.objects.filter(
+            Q(username__icontains=query) | 
+            Q(profile__nickname__icontains=query)
+        ).distinct().exclude(id=request.user.id)
+    
+    return render(request, 'search_results.html', {'results': results, 'query': query})
+
+@login_required
+def inbox_view(request):
+    messages_qs = Message.objects.filter(
+        Q(sender=request.user) | Q(receiver=request.user)
+    ).order_by('-timestamp')
+    
+    conversations = []
+    seen_users = set()
+    
+    for msg in messages_qs:
+        other_user = msg.receiver if msg.sender == request.user else msg.sender
+        if other_user not in seen_users:
+            conversations.append({
+                'user': other_user,
+                'last_message': msg
+            })
+            seen_users.add(other_user)
+            
+    return render(request, 'messages/inbox.html', {'conversations': conversations})
+
+@login_required
+def chat_view(request, username):
+    other_user = get_object_or_404(User, username=username)
+    
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            msg = form.save(commit=False)
+            msg.sender = request.user
+            msg.receiver = other_user
+            msg.save()
+            return redirect('chat', username=username)
+    else:
+        form = MessageForm()
+    
+    messages_qs = Message.objects.filter(
+        (Q(sender=request.user) & Q(receiver=other_user)) |
+        (Q(sender=other_user) & Q(receiver=request.user))
+    ).order_by('timestamp')
+    
+    Message.objects.filter(sender=other_user, receiver=request.user, is_read=False).update(is_read=True)
+
+    return render(request, 'messages/chat.html', {
+        'other_user': other_user,
+        'messages': messages_qs,
+        'form': form
+    })
