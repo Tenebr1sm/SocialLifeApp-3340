@@ -12,10 +12,10 @@ You can then see their birthdays, set **reminders**, and when it’s someone’s
 
 ## 📄 Project Details
 **Target Release:** Prototype  
-**Document Status:** Work in Progress  
+**Document Status:** Complete
 **Document Owner:** Trey Pedroza  
-**Designers:** Trey Pedroza, Gael Marquez, Jesus Lira  
-**Developers:** Trey Pedroza, Gael Marquez, Jesus Lira  
+**Designers:** Trey Pedroza, Gael Marquez
+**Developers:** Trey Pedroza, Gael Marquez
 **Q&A Contact:** Trey Pedroza  
 
 ## 🧰 Tools
@@ -28,7 +28,6 @@ You can then see their birthdays, set **reminders**, and when it’s someone’s
 2. **User Profiles:** Allow users to edit their profiles and have basic customization options.  
 3. **Public and Private Accounts:** Let users decide whether to make their information (like birthdays) public or private.  
 4. **Friend System:** Personalize the app by managing a list of friends whose birthdays you want to remember.  
-5. **Calendar:** Display friends’ birthdays on a calendar.  
 6. **Searching System:** Search for users based on birthdays or usernames.  
 7. **Bulletin Board:** Show upcoming birthdays and related announcements.  
 8. **Message Forum:** Let users who share the same birthday day or year connect and chat.  
@@ -41,7 +40,9 @@ Below is a list of questions to be addressed as a result of reviewing this desig
 
 ## 🚫 Not Doing
 Below are the user stories, ideas, or features that were considered but are not included in this version or phase of the project:  
-- We currently have not excluded any features yet. 
+- Calendar
+- Account features
+- Profile Pictures
 
 ## 🧍 User Stories
 - **Searching System:** As a person who wants more friends with things in common, I want an app that allows me to search by shared things so that I can make more friends.  
@@ -54,3 +55,4 @@ Below are the user stories, ideas, or features that were considered but are not 
 - **11/12/25** - Initialized django project
 - **11/14/25** - Added the login and user creation system using the database.
 - **11/24/25** - Added birthday signup
+- **12/17/25** - Final features added
