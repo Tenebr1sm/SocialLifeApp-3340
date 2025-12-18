@@ -16,6 +16,7 @@ You can then see their birthdays, set **reminders**, and when it’s someone’s
 **Document Owner:** Trey Pedroza  
 **Designers:** Trey Pedroza, Gael Marquez
 **Developers:** Trey Pedroza, Gael Marquez
+**Figma Prototype:** Gael Marquez
 **Q&A Contact:** Trey Pedroza  
 
 ## 🧰 Tools
